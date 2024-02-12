@@ -1,0 +1,6 @@
+# -Djava.security.properties=/home/hiroko/myGit/htakamiy/bouncy-castle-case/bc.java.security.whole
+# -Djava.security.debug=provider,access
+-Djava.security.properties==/home/hiroko/myGit/htakamiy/bouncy-castle-case/bc.java.security.jasonk
+
+
+
