@@ -101,7 +101,7 @@ ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) at java.base/java.uti
 The curent solution is to [load the BouncyCastle explicitly](https://github.ibm.com/htakamiy/bouncy-castle-case/blob/main/src/main/java/io/openliberty/guides/ui/HomeServlet.java#L184) in the code. 
 
 After the code change, the code ran successfully without exception. 
-![webapp](https://github.ibm.com/htakamiy/bouncy-castle-case/blob/main/BouncyCastleApp.png "Sample WebApplication Output") 
+![webapp](https://github.com/una-tapa/bouncy-castle-experiment/blob/main/BouncyCastleApp.png "Sample WebApplication Output") 
 
 ## Reference:
 - [Providing global libraries for all Java EE applications](
