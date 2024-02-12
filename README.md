@@ -1,8 +1,8 @@
-# Experiment Bouncy Castle with Liberty
+# Reported Issue
 
-Issue: 
 - AES encryption is not working on OpenLiberty with Temurin V17
 - The same encryption code works with Temurin V17 without Liberty
+
 
 ## Java standalone program 
 
@@ -43,16 +43,17 @@ java.security.NoSuchAlgorithmException: AES SecretKeyFactory not available
 --------END Dump stack ---------
 ```
 
-<!-- Reference: [My question thread on #java-at-ibm regarding how to pass in the JVM properties](https://ibm-cloud.slack.com/archives/C59HR9D5X/p1707418678693949)
+<!-- 
+Reference: [My question thread on #java-at-ibm regarding how to pass in the JVM properties](https://ibm-cloud.slack.com/archives/C59HR9D5X/p1707418678693949) 
 -->
 
 ## WebApplication
 
-If the customer put the same code into a web application and run on the Liberty, the application does not seem to have access to the Bouncy Castle, even though the same properties are set in `jvm.options` as follows: 
+If the customer put the same code into a web application and run on the Liberty, the application does not seem to have access to the Bouncy Castle, even though the same properties are set in [jvm.options](https://github.ibm.com/htakamiy/bouncy-castle-case/blob/main/src/main/liberty/config/jvm.options) as follows: 
 ```
 -Djava.security.properties==/home/hiroko/myGit/htakamiy/bouncy-castle-case/bc.java.security.jasonk
 ```
-and the server.xml has the following configuration:
+and the [server.xml](https://github.ibm.com/htakamiy/bouncy-castle-case/blob/main/src/main/liberty/config/server.xml#L22) has the following configuration:
 ```
 <library id="global">
   <fileset dir="/home/hiroko/myGit/htakamiy/bouncy-castle-case" includes="*.jar" />
@@ -89,16 +90,21 @@ Unfortuantely, the same code run in the application does not seem to have access
 ```
 AES logic threw exception.AES SecretKeyFactory not available
 
--- Error Stack --- java.security.NoSuchAlgorithmException: AES SecretKeyFactory not available at java.base/javax.crypto.SecretKeyFactory.(SecretKeyFactory.java:118) at java.base/javax.crypto.SecretKeyFactory.getInstance(SecretKeyFactory.java:164) at io.openliberty.guides.ui.HomeServlet.doGet(HomeServlet.java:87) at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:527) at jakarta.
+-- Error Stack --- 
+java.security.NoSuchAlgorithmException: AES SecretKeyFactory not available at java.base/javax.crypto.SecretKeyFactory.(SecretKeyFactory.java:118) at java.base/javax.crypto.SecretKeyFactory.getInstance(SecretKeyFactory.java:164) at io.openliberty.guides.ui.HomeServlet.doGet(HomeServlet.java:87) at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:527) at jakarta.
 ....
 ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136) at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635) at java.base/java.lang.Thread.run(Thread.java:840)
  --------END Dump stack ---------
 ```
+## Current Solution
 
+The curent solution is to [load the BouncyCastle explicitly](https://github.ibm.com/htakamiy/bouncy-castle-case/blob/main/src/main/java/io/openliberty/guides/ui/HomeServlet.java#L184) in the code. 
 
-Reference:
+After the code change, the code ran successfully without exception. 
+![webapp](https://github.ibm.com/htakamiy/bouncy-castle-case/blob/main/BouncyCastleApp.png "Sample WebApplication Output") 
+
+## Reference:
 - [Providing global libraries for all Java EE applications](
 https://www.ibm.com/docs/en/was-liberty/base?topic=applications-providing-global-libraries-all-java-ee)
 - [Stackoverflow Setting Java classpath for Liberty](https://stackoverflow.com/questions/23658494/websphere-liberty-8-5-setting-java-classpath)
 - [Bouncy castle installation doc](https://github.com/bcgit/bc-java/wiki/Provider-Installation)
-- [Bouncy castle needs to be added only once (reddit)](https://www.reddit.com/r/javahelp/comments/g9hpol/bouncy_castle_security_provider/)
